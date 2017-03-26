@@ -20,7 +20,6 @@ function capitalizeFirstLetter(string) {
 }
 
 module.exports = (actions, round) => {
-  console.log(round, 'round');
   return yo`
     <div style="${styles.screen}">
       <div style=${captionStyles}>Name the gif</div>
