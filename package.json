@@ -2,8 +2,9 @@
   "scripts": {
     "build-client": "browserify src/index.client.js -o src/bundle.js",
     "watch-client": "watchify src/index.client.js -o src/bundle.js",
+    "serve-client": "serve src",
     "server": "nodemon src/index.server.js",
-    "start": "concurrently 'yarn run watch-client' 'yarn run server'"
+    "start": "concurrently 'yarn run watch-client' 'yarn run server' 'yarn run serve-client'"
   },
   "dependencies": {
     "browserify": "^14.1.0",
@@ -20,6 +21,7 @@
     "eslint-plugin-node": "^4.2.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^2.1.1",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "serve": "^5.1.1"
   }
 }
