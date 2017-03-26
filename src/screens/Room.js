@@ -14,7 +14,10 @@ module.exports = (actions, props) => yo`
     <div style=${name}>${props.roomId}</div>
     ${Gif(props.roomId.replace('-', ' '))}
     ${Players(props.players)}
-    <button style="${styles.button}" ${props.isReady ? '' : 'disabled'}>
+    <button
+      onclick=${() => actions.default('rematch')}
+      style="${styles.button}" ${props.isReady ? '' : 'disabled'}
+    >
       Start game
     </button>
   </div>

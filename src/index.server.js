@@ -11,7 +11,9 @@ const getFreshRound = () => {
       options: [
         {
           id: 0,
-          label: names.choose()
+          label: names.choose(),
+          isAnswered: true,
+          answeredBy: 123456789
         },
         {
           id: 1,
