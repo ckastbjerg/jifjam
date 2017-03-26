@@ -5,19 +5,19 @@ const styles = `
 `;
 
 const titleStyles = `
-    font-size: 7vw;
+    font-size: 6vw;
     margin-bottom: 3vh;
 `;
 
 const playerStyles = `
-    background-color: white;
-    border-bottom: 1px solid;
+    border: 1px solid #222;
     padding: 5vw;
+    font-size: 6vw;
 `;
 
 module.exports = players => yo`
   <div style="${styles}">
-    <div style="${titleStyles}">Players</div>
+    <div style="${titleStyles}">Players in this room</div>
     ${players.map(player => yo`
       <div style="${playerStyles}">${player}</div>
     `)}

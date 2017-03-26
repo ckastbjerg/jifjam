@@ -13,6 +13,7 @@ const styles = `
   width: 100%;
   display: flex;
   justify-content: center;
+  overflow: hidden;
 `;
 
 const imageStyles = `
@@ -26,5 +27,5 @@ module.exports = searchText => {
         document.getElementById(id).innerHTML = `<img style="${imageStyles}" src="${url}" />`;
     });
 
-    return yo`<div style="${styles}" id="${id}"></div>`;
+    return yo`<div class="animated tada" style="${styles}" id="${id}"></div>`;
 }

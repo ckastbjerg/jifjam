@@ -3,8 +3,9 @@ const plugplay = require('plugplay/client')
 const playersPlugin = require('plugplay/plugins/players/client')()
 const roomsPlugin = require('plugplay/plugins/rooms/client')()
 
-const Lobby = require('./components/Lobby')
-const Room = require('./components/Room')
+const Lobby = require('./screens/Lobby')
+const Room = require('./screens/Room')
+const Round = require('./screens/Round')
 
 const actions = plugplay({
   serverUrl: 'localhost:3000',
@@ -13,9 +14,12 @@ const actions = plugplay({
 })
 
 function Game (props = { rooms: [] }) {
-  if (props.roomId) {
+  if (props.round) {
+    return Round(actions, props.round)
+  } else if (props.roomId) {
     return Room(actions, props)
   }
+
   return Lobby(actions, props.rooms)
 }
 
