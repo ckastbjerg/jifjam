@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "browserify": "^14.1.0",
+    "moniker": "^0.1.2",
     "plugplay": "^0.0.3-alpha",
     "standard": "^9.0.1",
     "watchify": "^3.9.0",
