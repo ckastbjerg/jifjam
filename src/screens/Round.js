@@ -40,7 +40,7 @@ module.exports = (actions, round) => {
   return yo`
     <div style="${styles.screen}">
       <div style=${captionStyles}>Name the gif</div>
-      ${Gif(round.correctOption)}
+      ${Gif(round.options[round.correctOption].label)}
       <div style="width: 100%">
         ${round.options.map(option => yo`
           <div style="${optionStyles}">
