@@ -1,7 +1,9 @@
-const moniker = require('moniker')
+const Moniker = require('moniker')
 const plugplay = require('plugplay/server')
 const playersPluginFactory = require('plugplay/plugins/players/server')
 const roomsPluginFactory = require('plugplay/plugins/rooms/server')
+
+var names = Moniker.generator([Moniker.noun])
 
 const getFreshRound = () => {
   return {
@@ -9,19 +11,19 @@ const getFreshRound = () => {
       options: [
         {
           id: 0,
-          label: moniker.choose()
+          label: names.choose()
         },
         {
           id: 1,
-          label: moniker.choose()
+          label: names.choose()
         },
         {
           id: 2,
-          label: moniker.choose()
+          label: names.choose()
         },
         {
           id: 3,
-          label: moniker.choose()
+          label: names.choose()
         }
       ],
       correctOption: Math.floor(Math.random() * 4)
@@ -52,7 +54,7 @@ const roomReducer = (state, action) => {
 const playersPlugin = playersPluginFactory()
 
 const roomsPlugin = roomsPluginFactory({
-  minPlayers: 3,
+  minPlayers: 2,
   maxPlayers: 4,
   roomReducer
 })
