@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "build-client": "browserify src/index.client.js -o src/bundle.js",
+    "watch-client": "watchify src/index.client.js -o src/bundle.js",
+    "start": "nodemon src/index.server.js"
+  },
+  "dependencies": {
+    "browserify": "^14.1.0",
+    "plugplay": "^0.0.3-alpha",
+    "standard": "^9.0.1",
+    "watchify": "^3.9.0",
+    "yo-yo": "^1.4.0"
+  }
+}
