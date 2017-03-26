@@ -1,1 +1,0 @@
-console.error("Error: Cannot find module './components/Lobby' from '/Users/kenneth/git/jifjam/src'");
