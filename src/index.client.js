@@ -1,27 +1,29 @@
-const yo = require('yo-yo')
-const plugplay = require('plugplay/client')
-const playersPlugin = require('plugplay/plugins/players/client')()
-const roomsPlugin = require('plugplay/plugins/rooms/client')()
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-const Lobby = require('./screens/Lobby')
-const Room = require('./screens/Room')
-const Round = require('./screens/Round')
+import plugplay from 'plugplay/client'
+import playersPlugin from 'plugplay/plugins/players/client'
+import roomsPlugin from 'plugplay/plugins/rooms/client'
+
+import Game from './Game'
+
+// const serverUrl = 'https://jifjam-ezmdbjmcwc.now.sh'
+const serverUrl = 'localhost:3000'
 
 const actions = plugplay({
-  serverUrl: 'localhost:3000',
-  plugins: [playersPlugin, roomsPlugin],
-  onPropsUpdated: props => console.log(props) || yo.update(el, Game(props))
+  serverUrl,
+  plugins: [playersPlugin(), roomsPlugin()],
+  onPropsUpdated: props => render(props)
 })
 
-function Game (props = { rooms: [] }) {
-  if (props.round) {
-    return Round(actions, props.round)
-  } else if (props.roomId) {
-    return Room(actions, props)
-  }
-
-  return Lobby(actions, props.rooms)
+function render(props = { rooms: [] }) {
+  const state = Object.assign({}, props, { actions: actions })
+  ReactDOM.render(
+    <Game {...state} />,
+    document.getElementById('app')
+  );
 }
 
-const el = Game()
-document.body.appendChild(el)
+if (module.hot) {
+    module.hot.accept();
+}

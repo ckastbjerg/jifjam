@@ -1,24 +1,17 @@
-const yo = require('yo-yo')
-const Players = require('../components/Players')
-const Gif = require('../components/Gif')
-const styles = require('../styles')
+import React from 'react'
+import { Screen, Button, Caption } from '../elements'
 
-const name = `
-  text-transform: uppercase;
-  font-size: 5vw;
-  letter-spacing: .3vw;
-`;
+import Players from '../components/Players'
+import Gif from '../components/Gif'
 
-module.exports = (actions, props) => yo`
-  <div style="${styles.screen}">
-    <div style=${name}>${props.roomId}</div>
-    ${Gif(props.roomId.replace('-', ' '))}
-    ${Players(props.players)}
-    <button
-      onclick=${() => actions.default('rematch')}
-      style="${styles.button}" ${props.isReady ? '' : 'disabled'}
-    >
+const Room = ({ actions, isReady, players, roomId }) =>
+  <Screen>
+    <Caption>{roomId}</Caption>
+    <Gif searchQuery={roomId.replace('-', ' ')} />
+    <Players players={players} />
+    <Button disabled={!isReady} onTouchEnd={() => actions.default('new game')}>
       Start game
-    </button>
-  </div>
-`
+    </Button>
+  </Screen>
+
+export default Room

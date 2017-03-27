@@ -1,68 +1,34 @@
-const yo = require('yo-yo')
-const styles = require('../styles')
-const Git = require('../components/Gif')
+import React from 'react'
+import styled from 'styled-components'
+import { Screen, Button } from '../elements'
 
-const titleStyles = `
+const Logo = styled.h1`
   font-family: 'Londrina Outline', cursive;
   font-size: 30vw;
 `
 
-const emptyStyles = `
-  font-size: 7vw;
-  opacity: .25;
-`
+const Room = ({ roomId, players, onJoinRoom }) =>
+  <li>
+    <div>{roomId} (${players.length} players)</div>
+    <button onTouchEnd={() => onJoinRoom(roomId)}>Join</button>
+  </li>
 
-const roomsStyles = `
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
-
-const roomsItemStyles = `
-  align-items: center;
-  display: flex;
-  font-size: 5vw;
-  justify-content: space-between;
-`;
-
-const roomsItemButtonStyles = `
-  font-size: 8vw;
-  text-transform: uppercase;
-  font-family: 'Londrina Outline', cursive;
-`;
-
-const listRooms = (actions, rooms) => yo`
-  <ul style="${roomsStyles}">
-    ${rooms.map(room => yo`
-      <li style="${roomsItemStyles}">
-        <div>${room.roomId} (${room.players.length} players)</div>
-        <button
-          style="${roomsItemButtonStyles}"
-          onclick=${() => actions.rooms.join(room.roomId)}
-        >
-          Join
-        </button>
-      </li>`
-    )}
-  </ul>
-`
-
-module.exports = (actions, rooms) => yo`
-  <div style="${styles.screen}"">
-    <div
-      class="animated rubberBand"
-      style="${titleStyles}"
-    >
-      Jif Jam
-    </div>
-    ${rooms.length > 0 ? listRooms(actions, rooms) : yo`
-      <div style="${emptyStyles}">No rooms created</div>`
+const Lobby = ({ actions, rooms }) =>
+  <Screen>
+    <Logo>Jif Jam</Logo>
+    {rooms.length === 0 &&
+      <div>No rooms created</div>
     }
-    <button
-      style="${styles.button}"
-      onclick=${actions.rooms.create}
-    >
+    {rooms.length > 0 &&
+      <ul>
+        {rooms.map(room =>
+          <Room onJoinRoom={actions.rooms.join} {...room} />
+        )}
+      </ul>
+    }
+    <Button onTouchEnd={actions.rooms.create}>
       Create new room
-    </button>
-  </div>
-`
+    </Button>
+  </Screen>
+
+export default Lobby

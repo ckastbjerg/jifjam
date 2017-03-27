@@ -1,62 +1,103 @@
-const yo = require('yo-yo')
-const Gif = require('../components/Gif')
-const styles = require('../styles')
+import React from 'react'
+import styled from 'styled-components'
 
-const captionStyles = `
-  text-transform: uppercase;
-  font-size: 5vw;
-  letter-spacing: .3vw;
-`;
+import Players from '../components/Players'
+import Gif from '../components/Gif'
+import { capitalizeFirstLetter } from '../utils'
 
-const optionStyles = `
-  position: relative;
-  width: 100%;
+import { Caption, Screen, fontFamilyBase } from '../elements';
+
+const Options = styled.ul`
+  display: flex;
+  flex-direction: column;
+`
+
+const Option = styled.li`
   margin-top: 3vh;
-`;
+  position: relative;
+`
 
-const optionLabelStyles = `
-  position: absolute;
-  top: -2vh;
-  left: 0;
-  background: #222;
-  font-size: 4vw;
-  padding: 3vw;
-  color: var(--white);
-`;
-
-const optionButtonStyles = `
-  width: 100%;
-  padding: 3vw;
+const Button = styled.button`
+  border: 0;
+  font-family: ${fontFamilyBase};
   font-size: 7vw;
+  padding: 3vw;
+  background: ${props => {
+    if (props.correct === true) { return 'green' }
+    if (props.correct === false) { return 'red' }
+    return '#eee'
+  }}
+  color: ${props => {
+    if (props.correct === true) { return 'white' }
+    if (props.correct === false) { return 'white' }
+    return '#222'
+  }}
+  width: 100%;
+`
+
+const Label = styled.div`
+  width: 100%;
+  left: 0;
+  top: -2vh;
+  position: absolute;
+  display: flex;
+  justify-content: center;
 `;
 
+const LabelInner = styled.div`
+  background: #222;
+  color: white;
+  font-size: 3.5vw;
+  padding: 2vw;
+`;
 
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
+const NextRoundButton = styled.button`
+  font-size: 5vw;
+  padding: 3vw;
+  background-color: #222;
+  color: white;
+  text-transform: uppercase;
+  opacity: ${props => props.visible ? '1' : '0'};
+`
 
-module.exports = (actions, round) => {
-  console.log(round, 'round');
-  return yo`
-    <div style="${styles.screen}">
-      <div style=${captionStyles}>Name the gif</div>
-      ${Gif(round.options[round.correctOption].label)}
-      <div style="width: 100%">
-        ${round.options.map(option => yo`
-          <div style="${optionStyles}">
-            ${option.answeredBy &&
-              yo`<div style="${optionLabelStyles}">${option.answeredBy}</div>`
+const Round = ({ actions, round, players, scores }) => {
+  const isAnswered = round.options.find(option => option.isAnsweredCorrectly)
+
+  return (
+    <Screen>
+      <Caption>Name the gif</Caption>
+      <Gif searchQuery={round.options.find(option => option.id === round.correctOption).label} />
+      <NextRoundButton
+        visible={isAnswered}
+        onTouchEnd={() => actions.default('new round')}
+      >
+        Next gif
+      </NextRoundButton>
+      <Options>
+        {round.options.sort((a, b) => a.id > b.id).map(option =>
+          <Option key={`option-${option.id}`}>
+            {option.answeredBy &&
+              <Label>
+                <LabelInner>
+                  {players.find(player => player.id === option.answeredBy).name}&nbsp;:&nbsp;
+                  {scores.find(score => score.playerId === option.answeredBy).score}
+                </LabelInner>
+              </Label>
             }
-            <button
-              ${option.isAnswered ? 'disabled' : ''}
-              onclick=${() => actions.default('option select', option.id)}
-              style="${optionButtonStyles}"
+            <Button
+              disabled={option.isAnswered}
+              correct={option.isAnsweredCorrectly}
+              onTouchEnd={() => (option.isAnswered || isAnswered)
+                ? null : actions.default('option select', option.id)
+              }
             >
-              ${capitalizeFirstLetter(option.label)}
-            </button>
-          </div>
-        `)}
-      </div>
-    </div>
-  `;
+              {capitalizeFirstLetter(option.label)}
+            </Button>
+          </Option>
+        )}
+      </Options>
+    </Screen>
+  )
 }
+
+export default Round

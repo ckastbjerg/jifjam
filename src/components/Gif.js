@@ -1,31 +1,46 @@
-const yo = require('yo-yo')
+import React, { Component } from 'react'
+import styled from 'styled-components'
 
-function getGif(searchText) {
-    const req = `${location.protocol}//api.giphy.com/v1/stickers/search?q=${searchText}&api_key=dc6zaTOxFJmzC`;
-    return fetch(req).then(response => response.json()).then(res => {
-        const index = Math.floor(Math.random() * res.data.length);
-        return res.data[index].images.fixed_height.url;
-    });
-}
-
-const styles = `
+const Wrapper = styled.div`
   height: 30vh;
   width: 100%;
   display: flex;
   justify-content: center;
   overflow: hidden;
-`;
+`
 
-const imageStyles = `
-  height: 100%;
-`;
+const Gif = class extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      searchQuery: null,
+    }
+    this.fetch = this.fetch.bind(this)
+  }
 
-module.exports = searchText => {
-    const id = Math.random().toString();
+  componentDidUpdate() { this.fetch() }
+  componentDidMount() { this.fetch() }
 
-    getGif(searchText).then(url => {
-        document.getElementById(id).innerHTML = `<img style="${imageStyles}" src="${url}" />`;
+  fetch() {
+    if (this.props.searchQuery === this.state.searchQuery) { return }
+    this.element.src = 'http://media2.giphy.com/media/ciBu4XLAThuVi/200.gif'
+
+    this.state = { searchQuery: this.props.searchQuery }
+    const url = `${location.protocol}//api.giphy.com/v1/stickers/search`
+    const req = `${url}?q=${this.state.searchQuery}&api_key=dc6zaTOxFJmzC`
+    fetch(req).then(response => response.json()).then(res => {
+      const index = Math.floor(Math.random() * res.data.length)
+      this.element.src = res.data[index].images.fixed_height.url
     });
+  }
 
-    return yo`<div class="animated tada" style="${styles}" id="${id}"></div>`;
+  render() {
+    return (
+      <Wrapper>
+        <img ref={element => this.element = element} />
+      </Wrapper>
+    )
+  }
 }
+
+export default Gif

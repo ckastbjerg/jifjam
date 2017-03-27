@@ -5,7 +5,7 @@ const roomsPluginFactory = require('plugplay/plugins/rooms/server')
 
 var names = Moniker.generator([Moniker.noun])
 
-function getFreshRound () {
+function getFreshRound() {
   const options = [...Array(4)].map((_, id) => ({
     id,
     label: names.choose(),
@@ -14,28 +14,61 @@ function getFreshRound () {
   }))
   const correctOptionId = Math.floor(Math.random() * 4)
   return {
-    round: {
-      options: options,
-      correctOption: correctOptionId
-    }
+    options: options,
+    correctOption: correctOptionId
   }
 }
 
 const roomReducer = (state, action) => {
-  if (!state.isReady) {
-    return state.data
+  if (action.type === 'USER_ACTION' && action.payload.type === 'new game') {
+    const round = getFreshRound()
+    const scores = state.players.map(playerId => {
+      return { playerId, score: 0 }
+    })
+
+    return Object.assign({}, state.data, { scores, round, isGameOver: false })
   }
 
-  if (action.type === 'USER_ACTION' && action.payload.type === 'rematch') {
-    return getFreshRound()
+  if (action.type === 'USER_ACTION' && action.payload.type === 'new round') {
+    const round = getFreshRound()
+    return Object.assign({}, state.data, { round })
   }
 
   if (action.type === 'USER_ACTION' && action.payload.type === 'option select') {
-    // FIXME: first one to find the right one, and you can only vote once
-    // const nextBoard = [...state.data.board]
-    // nextBoard[action.payload.data] = action.payload.playerId
+    const round = state.data.round
+    console.log(round)
+    const options = round.options
+    const optionId = action.payload.data
+    const playerId = action.payload.playerId
+    const isAnsweredCorrectly = round.correctOption === optionId
+    const option = options.find(option => option.id === optionId)
+    const newOptions = options.filter(option => option.id !== optionId)
+    const newOption = Object.assign({}, option, {
+      answeredBy: playerId,
+      isAnswered: true,
+      isAnsweredCorrectly,
+    })
+    newOptions.push(newOption)
 
-    return getFreshRound()
+    const scores = state.data.scores || []
+    const newScores = scores.filter(score => score.playerId !== playerId)
+    const playerScore = scores.find(score => score.playerId === playerId)
+    playerScore.score = isAnsweredCorrectly
+      ? playerScore.score + 1
+      : (playerScore.score === 0 ? 0 : playerScore.score - 1)
+    newScores.push(playerScore)
+
+    const newState = Object.assign({}, state.data, {
+      round: Object.assign({}, round, {
+        options: newOptions,
+      }),
+      scores: newScores,
+      isGameOver: playerScore.score === 5,
+    })
+
+    console.log(newState)
+
+    return newState
   }
 
   return state.data
@@ -44,7 +77,7 @@ const roomReducer = (state, action) => {
 const playersPlugin = playersPluginFactory()
 
 const roomsPlugin = roomsPluginFactory({
-  minPlayers: 2,
+  minPlayers: 1,
   maxPlayers: 4,
   roomReducer
 })
@@ -52,26 +85,57 @@ const roomsPlugin = roomsPluginFactory({
 const mapStateToClientProps = (state, { playerId, roomId }) => {
   const room = state.rooms.byId[roomId]
 
-  if (roomId && room.data) {
+  if (roomId && room.data && room.data.isGameOver) {
+    const players = room.players.map(id => {
+      return {
+        id: id,
+        name: state.players.byId[id].name,
+      }
+    })
+
     return {
-      screen: 'round-selection',
+      screen: 'end',
+      players,
+      scores: room.data.scores,
+    }
+  }
+
+  if (roomId && room.data && room.data.round) {
+    const players = room.players.map(id => {
+      return {
+        id: id,
+        name: state.players.byId[id].name,
+      }
+    })
+
+    return {
+      screen: 'round',
       round: room.data.round,
-      players: room.players,
+      players,
+      scores: room.data.scores,
       isReady: room.isReady,
       roomId
     }
   }
 
   if (roomId) {
+    const players = room.players.map(id => {
+      return {
+        id: id,
+        name: state.players.byId[id].name,
+      }
+    })
+
     return {
-      screen: 'room-selection',
-      players: room.players,
+      screen: 'room',
+      players,
       isReady: room.isReady,
       roomId
     }
   }
 
   return {
+    screen: 'lobby',
     rooms: state.rooms.ids.map(roomId => state.rooms.byId[roomId])
   }
 }
