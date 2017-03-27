@@ -5,30 +5,18 @@ const roomsPluginFactory = require('plugplay/plugins/rooms/server')
 
 var names = Moniker.generator([Moniker.noun])
 
-const getFreshRound = () => {
+function getFreshRound () {
+  const options = [...Array(4)].map((_, id) => ({
+    id,
+    label: names.choose(),
+    isAnswered: false,
+    answeredBy: null
+  }))
+  const correctOptionId = Math.floor(Math.random() * 4)
   return {
     round: {
-      options: [
-        {
-          id: 0,
-          label: names.choose(),
-          isAnswered: true,
-          answeredBy: 123456789
-        },
-        {
-          id: 1,
-          label: names.choose()
-        },
-        {
-          id: 2,
-          label: names.choose()
-        },
-        {
-          id: 3,
-          label: names.choose()
-        }
-      ],
-      correctOption: Math.floor(Math.random() * 4)
+      options: options,
+      correctOption: correctOptionId
     }
   }
 }
