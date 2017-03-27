@@ -26,7 +26,7 @@ const roomReducer = (state, action) => {
     return state.data
   }
 
-  if (!state.data || (action.type === 'USER_ACTION' && action.payload.type === 'rematch')) {
+  if (action.type === 'USER_ACTION' && action.payload.type === 'rematch') {
     return getFreshRound()
   }
 
